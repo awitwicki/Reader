@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="7.0.8" />
     <PackageReference Include="MudBlazor" Version="6.1.10-dev1" />
   </ItemGroup>
 
@@ -38,7 +38,6 @@
   <ItemGroup>
     <AdditionalFiles Include="Shared\MainLayout.razor" />
     <AdditionalFiles Include="Shared\NavMenu.razor" />
-    <AdditionalFiles Include="Shared\SurveyPrompt.razor" />
   </ItemGroup>
 
 </Project>
