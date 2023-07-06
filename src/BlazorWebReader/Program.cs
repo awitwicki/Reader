@@ -1,7 +1,6 @@
-using BlazorWebReader.Data;
 using MudBlazor.Services;
 using Reader.Services;
-using Reader.Services.Extenions;
+using Reader.Services.Extensions;
 using Reader.Services.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);

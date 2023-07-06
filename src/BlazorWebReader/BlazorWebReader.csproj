@@ -31,8 +31,4 @@
       <ProjectReference Include="..\Reader.ViewModels\Reader.ViewModels.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Data\" />
-    </ItemGroup>
-
 </Project>

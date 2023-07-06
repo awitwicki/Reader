@@ -1,4 +1,4 @@
-namespace BlazorWebReader.Data;
+namespace Reader.Services;
 
 public class WeatherForecast
 {

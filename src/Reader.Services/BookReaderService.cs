@@ -7,13 +7,13 @@ namespace Reader.Services;
 
 public class BookReaderService : IBookReaderService
 {
-    private readonly ReaderBookState _ReaderBookState;
+    private readonly ReaderBookState _readerBookState;
     public Subscribable<FB2File> Book { get; set; }
 
     public BookReaderService(ReaderBookState readerBookState)
     {
-        _ReaderBookState = readerBookState;
-        Book = new();
+        _readerBookState = readerBookState;
+        Book = new Subscribable<FB2File>();
     }
 
     public IEnumerable<string> GetBooks()
@@ -25,7 +25,7 @@ public class BookReaderService : IBookReaderService
     {
         await using FileStream stream = new("1984.fb2", FileMode.Open);
         Book.Value = await _ReadFB2FileStreamAsync(stream);
-        _ReaderBookState.BookName.Value = Book.Value.TitleInfo.BookTitle.Text;
+        _readerBookState.BookName.Value = Book.Value.TitleInfo.BookTitle.Text;
         return Book.Value;
     }
     
@@ -41,14 +41,14 @@ public class BookReaderService : IBookReaderService
         try
         {
             // Reading
-            FB2File file = await new FB2Reader().ReadAsync(stream, loadSettings);
+            var file = await new FB2Reader().ReadAsync(stream, loadSettings);
             return file;
         }
         catch (Exception ex)
         {
-            Debug.WriteLine(string.Format("Error loading file : {0}", ex.Message));
+            Debug.WriteLine($"Error loading file : {ex.Message}");
         }
 
-        return null;
+        return null!;
     }
 }

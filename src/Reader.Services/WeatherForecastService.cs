@@ -1,5 +1,3 @@
-using BlazorWebReader.Data;
-
 namespace Reader.Services;
 
 public class WeatherForecastService

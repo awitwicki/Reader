@@ -7,27 +7,27 @@
 
 Welcome to your new app.
 
-<MudText Typo="Typo.h6">@title</MudText>
-<MudText Typo="Typo.h6">@sectionName</MudText>
+<MudText Typo="Typo.h6">@_title</MudText>
+<MudText Typo="Typo.h6">@_sectionName</MudText>
 <MudButton Variant="Variant.Filled" Color="Color.Primary">awesome</MudButton>
 
-@foreach (string ff in content)
+@foreach (var ff in _content)
 {
      <MudText Typo="Typo.body1">@ff</MudText> 
 }
 
 @code {
-    string title = "";
-    string sectionName= "";
-    List<string> content = new List<string>();
+    string _title = "";
+    string _sectionName= "";
+    List<string> _content = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
         var book = await BookReaderService.GetBookAsync("1984.fb2");
 
-        title = book.TitleInfo.BookTitle.Text;
-        SectionItem content2 = (SectionItem)book.MainBody.Sections.First().Content.First();
-        content = content2.Content.Select(x => x.ToString()).ToList();
+        _title = book.TitleInfo.BookTitle.Text;
+        var content2 = (SectionItem)book.MainBody.Sections.First().Content.First();
+        _content = content2.Content.Select(x => x.ToString()).ToList();
         
         StateHasChanged();
     }
