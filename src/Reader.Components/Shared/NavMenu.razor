@@ -1,0 +1,37 @@
+﻿@inject IBookReaderService BookReaderService;
+@using Reader.Services
+@using MudBlazor
+@using Microsoft.AspNetCore.Components.Routing
+@implements IDisposable
+
+<MudNavMenu>
+    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
+    <MudNavLink Href="/counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Countertops">Counter</MudNavLink>
+    <MudNavLink Href="/fetchdata" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.DataExploration">Fetch data</MudNavLink>
+
+    <MudDivider />
+
+    @if (BookReaderService.Book.Value != null)
+    {
+        foreach (var body in BookReaderService.Book.Value.Bodies)
+        {
+            foreach (var section in body.Sections)
+            {
+                <MudListItem Icon="@Icons.Material.Filled.Book">@(section.Title.ToString())</MudListItem>
+            }
+        }
+    }
+    
+</MudNavMenu>
+
+@code {
+    protected override void OnInitialized()
+    {
+        BookReaderService.Book.OnChange += StateHasChanged;
+    }
+    
+    void IDisposable.Dispose()
+    {
+        BookReaderService.Book.OnChange -= StateHasChanged;
+    }
+}
