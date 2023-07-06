@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reader.Services", "Reader.S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reader.Components", "Reader.Components\Reader.Components.csproj", "{27F16AD9-F12C-4E9A-9C0E-6C56808902BC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reader.Components.Tests", "Reader.Components.Tests\Reader.Components.Tests.csproj", "{943C7457-BB26-4504-A200-77FA670F5E65}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{27F16AD9-F12C-4E9A-9C0E-6C56808902BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27F16AD9-F12C-4E9A-9C0E-6C56808902BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27F16AD9-F12C-4E9A-9C0E-6C56808902BC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{943C7457-BB26-4504-A200-77FA670F5E65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{943C7457-BB26-4504-A200-77FA670F5E65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{943C7457-BB26-4504-A200-77FA670F5E65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{943C7457-BB26-4504-A200-77FA670F5E65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
