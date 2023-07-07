@@ -2,6 +2,7 @@
 @using Reader.Services
 @using MudBlazor
 @using Microsoft.AspNetCore.Components.Routing
+@using Reader.Domain.Interfaces
 @implements IDisposable
 
 <MudNavMenu>
@@ -17,7 +18,7 @@
         {
             foreach (var section in body.Sections)
             {
-                <MudListItem Icon="@Icons.Material.Filled.Book">@(section.Title.ToString())</MudListItem>
+                <MudListItem Icon="@Icons.Material.Filled.Book" OnClick="() => BookReaderService.SelectBookSection(section.ID) ">@(section.Title.ToString())</MudListItem>
             }
         }
     }

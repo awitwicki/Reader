@@ -1,7 +1,7 @@
 using MudBlazor.Services;
+using Reader.Common.Extensions;
+using Reader.Domain.Helpers;
 using Reader.Services;
-using Reader.Services.Extensions;
-using Reader.Services.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 

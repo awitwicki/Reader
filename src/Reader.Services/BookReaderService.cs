@@ -1,7 +1,8 @@
 ﻿using System.Diagnostics;
 using System.Xml;
 using FB2Library;
-using Reader.Services.Helpers;
+using Reader.Domain.Helpers;
+using Reader.Domain.Interfaces;
 
 namespace Reader.Services;
 
@@ -28,7 +29,12 @@ public class BookReaderService : IBookReaderService
         _readerBookState.BookName.Value = Book.Value.TitleInfo.BookTitle.Text;
         return Book.Value;
     }
-    
+
+    public void SelectBookSection(string sectionId)
+    {
+        throw new NotImplementedException();
+    }
+
     private async Task<FB2File> _ReadFB2FileStreamAsync(Stream stream)
     {
         // Setup

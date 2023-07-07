@@ -14,5 +14,13 @@
         <PackageReference Include="FB2Library" Version="1.3.2" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Extensions\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Reader.Domain\Reader.Domain.csproj" />
+    </ItemGroup>
     
 </Project>

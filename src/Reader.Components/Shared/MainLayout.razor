@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject IBookReaderService BookReaderService;
-@using Reader.Services
 @using MudBlazor
+@using Reader.Domain.Interfaces
 @implements IDisposable
 
 <MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode"/>

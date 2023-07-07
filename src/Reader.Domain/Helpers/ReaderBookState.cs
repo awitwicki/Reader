@@ -1,4 +1,4 @@
-namespace Reader.Services.Helpers;
+namespace Reader.Domain.Helpers;
 
 public class ReaderBookState
 {

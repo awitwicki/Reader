@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
+using Reader.Domain.Interfaces;
+using Reader.Services;
 
-namespace Reader.Services.Extensions;
+namespace Reader.Common.Extensions;
 
 public static class BookReaderServiceExtensions
 {
