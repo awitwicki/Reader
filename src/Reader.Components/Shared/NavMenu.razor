@@ -1,4 +1,5 @@
-﻿@inject IBookReaderService BookReaderService;
+﻿@inject IReaderBookState ReaderBookState;
+@inject IBookReaderService BookReaderService;
 @using Reader.Services
 @using MudBlazor
 @using Microsoft.AspNetCore.Components.Routing
@@ -12,14 +13,11 @@
 
     <MudDivider />
 
-    @if (BookReaderService.Book.Value != null)
+    @if (ReaderBookState.BookSections.Value != null)
     {
-        foreach (var body in BookReaderService.Book.Value.Bodies)
+        @foreach (var section in ReaderBookState.BookSections.Value!)
         {
-            foreach (var section in body.Sections)
-            {
-                <MudListItem Icon="@Icons.Material.Filled.Book" OnClick="() => BookReaderService.SelectBookSection(section.ID) ">@(section.Title.ToString())</MudListItem>
-            }
+            <MudListItem Icon="@Icons.Material.Filled.Book" OnClick="() => BookReaderService.SelectBookSection(section.Id)">@(section.Name)</MudListItem>
         }
     }
     
@@ -28,11 +26,11 @@
 @code {
     protected override void OnInitialized()
     {
-        BookReaderService.Book.OnChange += StateHasChanged;
+        ReaderBookState.BookSections.OnChange += StateHasChanged;
     }
     
     void IDisposable.Dispose()
     {
-        BookReaderService.Book.OnChange -= StateHasChanged;
+        ReaderBookState.BookSections.OnChange -= StateHasChanged;
     }
 }

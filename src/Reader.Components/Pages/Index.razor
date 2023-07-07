@@ -1,33 +1,26 @@
 ﻿@page "/"
-@using FB2Library.Elements
 @using Reader.Domain.Interfaces
+@inject IReaderBookState ReaderBookState;
 @inject IBookReaderService BookReaderService;
 
-<h1>Hello, world!</h1>
+<h1>@_sectionName</h1>
 
-Welcome to your new app.
-
-<MudText Typo="Typo.h6">@_title</MudText>
-<MudText Typo="Typo.h6">@_sectionName</MudText>
-<MudButton Variant="Variant.Filled" Color="Color.Primary">awesome</MudButton>
-
-@foreach (var ff in _content)
+@if (ReaderBookState.BookSectionContent.Value != null)
 {
-     <MudText Typo="Typo.body1">@ff</MudText> 
+    @foreach (var ff in ReaderBookState.BookSectionContent.Value!)
+    {
+        <MudText Typo="Typo.body1">@ff.Sentence</MudText>
+    }
 }
 
 @code {
-    string _title = "";
     string _sectionName= "";
-    List<string> _content = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
-        var book = await BookReaderService.GetBookAsync("1984.fb2");
+        await BookReaderService.LoadBookAsync("1984.fb2");
 
-        _title = book.TitleInfo.BookTitle.Text;
-        var content2 = (SectionItem)book.MainBody.Sections.First().Content.First();
-        _content = content2.Content.Select(x => x.ToString()).ToList();
+        _sectionName = ReaderBookState.BookSectionName.Value!;
         
         StateHasChanged();
     }

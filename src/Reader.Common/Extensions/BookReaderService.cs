@@ -6,9 +6,10 @@ namespace Reader.Common.Extensions;
 
 public static class BookReaderServiceExtensions
 {
-    public static IServiceCollection AddBookReaderService(this IServiceCollection serviceCollection)
+    public static IServiceCollection AddBookReaderServices(this IServiceCollection serviceCollection)
     {
-        serviceCollection.AddSingleton<IBookReaderService, BookReaderService>();
+        serviceCollection.AddSingleton<IReaderBookState, ReaderBookState>();
+        serviceCollection.AddScoped<IBookReaderService, BookReaderService>();
         return serviceCollection;
     }
 }

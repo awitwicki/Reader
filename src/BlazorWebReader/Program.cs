@@ -1,6 +1,5 @@
 using MudBlazor.Services;
 using Reader.Common.Extensions;
-using Reader.Domain.Helpers;
 using Reader.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,8 +9,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddMudServices();
 builder.Services.AddSingleton<WeatherForecastService>();
-builder.Services.AddBookReaderService();
-builder.Services.AddSingleton<ReaderBookState>();
+builder.Services.AddBookReaderServices();
 
 var app = builder.Build();
 
