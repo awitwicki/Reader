@@ -21,6 +21,15 @@
         await BookReaderService.LoadBookAsync("1984.fb2");
 
         _sectionName = ReaderBookState.BookSectionName.Value!;
+
+        ReaderBookState.BookSectionName.OnChange += () =>
+        {
+            InvokeAsync(() =>
+            {
+                _sectionName = ReaderBookState.BookSectionName.Value!;
+                StateHasChanged();
+            });
+        };
         
         StateHasChanged();
     }

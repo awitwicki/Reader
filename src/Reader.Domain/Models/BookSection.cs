@@ -2,6 +2,6 @@
 
 public class BookSection
 {
-    public string Id { get; set; }
+    public int Index { get; set; }
     public string Name { get; set; }
 }

@@ -31,39 +31,65 @@ public class BookReaderService : IBookReaderService
         _readerBookState.BookName.Value = Book.Value.TitleInfo.BookTitle.Text;
         
         // Map Book sections
-        var bookSections = Book.Value.MainBody.Sections.Select(x => 
-            new BookSection
+        var bookSections = Array.Empty<BookSection>().ToList();
+        for (var i = 0; i < Book.Value.MainBody.Sections.Count; i++)
+        {
+            bookSections.Add(new BookSection
             {
-                Id = x.ID,
-                Name = x.Title.ToString()!
-            })
-            .ToList();
-
+                Index = i,
+                Name = Book.Value.MainBody.Sections[i].Title.ToString()!
+            });
+        }
+      
         _readerBookState.BookSections.Value = bookSections;
         
         // Load first section
-        SelectBookSection(_readerBookState.BookSections.Value[0].Id);
+        // TODO load from settings
+        SelectBookSection(0);
         
         return Book.Value;
     }
 
-    public void SelectBookSection(string sectionId)
+    // TODO fix exception on reload
+    public void SelectBookSection(int index)
     {
-        var selectedSection = Book.Value!.MainBody.Sections.First(x => x.ID == sectionId);
-        
-       
+        var selectedSection = Book.Value!.MainBody.Sections.ElementAtOrDefault(index);
 
+        if (selectedSection == null)
+            throw new IndexOutOfRangeException($"Boos kection with index [{index}] isnt exists");
+        
+        var content = Array.Empty<BookSentence>().ToList();
+        
         // Map section sentences
-        var ggg = (SectionItem)selectedSection.Content.First();
-        var content = ggg.Content.Select(x => x.ToString()).Select(x => x.Split(".")
-                .Select(y => new BookSentence
-                {
-                    Sentence = y.ToString()!
-                })
-                .ToList()
-            )
-            .SelectMany(x => x)
-            .ToList();
+        var selectedItem = selectedSection.Content.First();
+        
+        // TODO exctarct to extensions
+        if (selectedItem is ParagraphItem)
+        {
+            var ggg = (ParagraphItem)selectedSection.Content.First();
+            content = ggg.ParagraphData.Select(x => x.ToString()).Select(x => x.Split(".")
+                    .Select(y => new BookSentence
+                    {
+                        Sentence = y.ToString()!
+                    })
+                    .ToList()
+                )
+                .SelectMany(x => x)
+                .ToList();
+        }
+        if (selectedItem is SectionItem)
+        {
+            var ggg = (SectionItem)selectedSection.Content.First();
+            content = ggg.Content.Select(x => x.ToString()).Select(x => x.Split(".")
+                    .Select(y => new BookSentence
+                    {
+                        Sentence = y.ToString()!
+                    })
+                    .ToList()
+                )
+                .SelectMany(x => x)
+                .ToList();
+        }
 
         _readerBookState.BookSectionName.Value = selectedSection.Title.ToString();
         _readerBookState.BookSectionContent.Value = content;
