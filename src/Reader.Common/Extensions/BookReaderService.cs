@@ -10,6 +10,7 @@ public static class BookReaderServiceExtensions
     {
         serviceCollection.AddSingleton<IReaderBookState, ReaderBookState>();
         serviceCollection.AddScoped<IBookReaderService, BookReaderService>();
+        serviceCollection.AddTransient<ITranslateService, TranslateService>();
         return serviceCollection;
     }
 }

@@ -26,7 +26,7 @@ public class BookReaderService : IBookReaderService
     
     public async Task<FB2File> LoadBookAsync(string filePath)
     {
-        await using FileStream stream = new("1984.fb2", FileMode.Open);
+        await using FileStream stream = new(filePath, FileMode.Open);
         Book.Value = await _ReadFB2FileStreamAsync(stream);
         _readerBookState.BookName.Value = Book.Value.TitleInfo.BookTitle.Text;
         
@@ -37,7 +37,7 @@ public class BookReaderService : IBookReaderService
             bookSections.Add(new BookSection
             {
                 Index = i,
-                Name = Book.Value.MainBody.Sections[i].Title.ToString()!
+                Name = Book.Value.MainBody.Sections[i].Title?.ToString()! ?? "Nameless" 
             });
         }
       
@@ -91,7 +91,7 @@ public class BookReaderService : IBookReaderService
                 .ToList();
         }
 
-        _readerBookState.BookSectionName.Value = selectedSection.Title.ToString();
+        _readerBookState.BookSectionName.Value = selectedSection.Title?.ToString()! ?? "Nameless" ;
         _readerBookState.BookSectionContent.Value = content;
     }
 

@@ -1,7 +1,11 @@
 ﻿@page "/"
 @using Reader.Domain.Interfaces
+@using MudBlazor
+@using Reader.Domain.Enums
+@using Reader.Domain.Models
 @inject IReaderBookState ReaderBookState;
 @inject IBookReaderService BookReaderService;
+@inject ITranslateService TranslateService;
 
 <h1>@_sectionName</h1>
 
@@ -9,7 +13,23 @@
 {
     @foreach (var ff in ReaderBookState.BookSectionContent.Value!)
     {
+        if (string.IsNullOrWhiteSpace(ff.Sentence))
+        {
+            continue;
+        }
+
         <MudText Typo="Typo.body1">@ff.Sentence</MudText>
+
+        <MudIconButton Icon="@Icons.Material.Filled.Translate"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Small"
+                       OnClick="async() => await TranslateBookSentence(ff)"/>
+                                               
+        if (!string.IsNullOrWhiteSpace(ff.TranslatedSentence))
+        {
+            <MudText Typo="Typo.body1" Color="Color.Error">@ff.TranslatedSentence</MudText>
+        }
     }
 }
 
@@ -18,7 +38,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await BookReaderService.LoadBookAsync("1984.fb2");
+        await BookReaderService.LoadBookAsync("thebladeitself.fb2");
 
         _sectionName = ReaderBookState.BookSectionName.Value!;
 
@@ -32,5 +52,10 @@
         };
         
         StateHasChanged();
+    }
+
+    public async Task TranslateBookSentence(BookSentence bookSentence)
+    {
+        bookSentence.TranslatedSentence = await TranslateService.Translate(bookSentence.Sentence, Language.Ukrainian);
     }
 }
