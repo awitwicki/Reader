@@ -6,7 +6,6 @@ namespace Reader.Services;
 public class ScrollInfoService : IScrollInfoService
 {
     public event EventHandler<float>? OnScrollEnd; 
-
     public ScrollInfoService(IJSRuntime jsRuntime)
     {
         RegisterServiceViaJsRuntime(jsRuntime);

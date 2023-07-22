@@ -1,0 +1,8 @@
+﻿namespace Reader.Domain.Models;
+
+public class BookSettings
+{
+    public string BookPath { get; set; } = null!;
+    public int LastBookSectionIndex { get; set; }
+    public float LastBookSectionProgress { get; set; }
+}

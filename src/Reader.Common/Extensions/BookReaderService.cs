@@ -12,6 +12,7 @@ public static class BookReaderServiceExtensions
         serviceCollection.AddScoped<IBookReaderService, BookReaderService>();
         serviceCollection.AddTransient<ITranslateService, TranslateService>();
         serviceCollection.AddTransient<IScrollInfoService, ScrollInfoService>();
+        serviceCollection.AddTransient<ISettings, SettingsService>();
         return serviceCollection;
     }
 }

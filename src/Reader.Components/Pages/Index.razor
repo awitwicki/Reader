@@ -9,6 +9,7 @@
 @inject ITranslateService TranslateService;
 @inject IScrollInfoService ScrollInfoService
 @inject IJSRuntime Js
+@inject ISettings Settings
 
 <h1>@_sectionName</h1>
 
@@ -38,10 +39,23 @@
 
 @code {
     string _sectionName= "";
-
     protected override async Task OnInitializedAsync()
     {
-        await BookReaderService.LoadBookAsync("thebladeitself.fb2");
+        // Load preferences
+        var bookSettings = await Settings.GetSettings();
+
+        // If book selected then load it
+        if (!string.IsNullOrWhiteSpace(bookSettings.BookPath))
+        {
+            await BookReaderService.LoadBookAsync(bookSettings.BookPath);
+
+            _sectionName = ReaderBookState.BookSectionName.Value!;
+        }
+        // Else load default
+        else
+        {
+            await BookReaderService.LoadBookAsync("thebladeitself.fb2");
+        }
 
         _sectionName = ReaderBookState.BookSectionName.Value!;
 
@@ -58,20 +72,16 @@
         
         StateHasChanged();
         
-        // Load preferences
-        var lastBookProgressStr = await Js.InvokeAsync<string>("readLocalStorage", "bookProgress");
-        if (float.TryParse(lastBookProgressStr, out var lastBookProgress))
-        {
-            await Js.InvokeVoidAsync("scrollContentTo", lastBookProgress);
-        }
+        await Js.InvokeVoidAsync("scrollContentTo", bookSettings.LastBookSectionProgress);
     }
 
     private void OnScrollEnd(object sender, float percent)
     {
-        Js.InvokeVoidAsync("addToLocalStorage", "bookProgress", percent).ConfigureAwait(false).GetAwaiter().GetResult();
-        StateHasChanged();
+        var bookSettings = Settings.GetSettings().ConfigureAwait(false).GetAwaiter().GetResult();
+        bookSettings.LastBookSectionProgress = percent;
+        Settings.UpdateSettings(bookSettings);
     }
-    
+
     private async Task TranslateBookSentence(BookSentence bookSentence)
     {
         bookSentence.TranslatedSentence = await TranslateService.Translate(bookSentence.Sentence, Language.Ukrainian);

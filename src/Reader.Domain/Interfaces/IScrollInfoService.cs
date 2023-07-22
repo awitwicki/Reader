@@ -2,6 +2,6 @@
 
 public interface IScrollInfoService
 {
-    event EventHandler<float> OnScrollEnd; 
+    event EventHandler<float> OnScrollEnd;
     float YPercentValue { get; }
 }

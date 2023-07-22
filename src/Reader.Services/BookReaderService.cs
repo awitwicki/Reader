@@ -11,11 +11,13 @@ namespace Reader.Services;
 public class BookReaderService : IBookReaderService
 {
     private readonly IReaderBookState _readerBookState;
+    private readonly ISettings _settings;
     public Subscribable<FB2File> Book { get; set; }
 
-    public BookReaderService(IReaderBookState readerBookState)
+    public BookReaderService(IReaderBookState readerBookState, ISettings settings)
     {
         _readerBookState = readerBookState;
+        _settings = settings;
         Book = new Subscribable<FB2File>();
     }
 
@@ -43,9 +45,13 @@ public class BookReaderService : IBookReaderService
       
         _readerBookState.BookSections.Value = bookSections;
         
-        // Load first section
-        // TODO load from settings
-        SelectBookSection(0);
+        // Update settings
+        var bookSettings = await _settings.GetSettings();
+        bookSettings.BookPath = filePath;
+        await _settings.UpdateSettings(bookSettings);
+        
+        // Load section
+        SelectBookSection(bookSettings.LastBookSectionIndex);
         
         return Book.Value;
     }
@@ -57,12 +63,12 @@ public class BookReaderService : IBookReaderService
 
         if (selectedSection == null)
             throw new IndexOutOfRangeException($"Boos kection with index [{index}] isnt exists");
-        
+
         var content = Array.Empty<BookSentence>().ToList();
-        
+
         // Map section sentences
         var selectedItem = selectedSection.Content.First();
-        
+
         // TODO exctarct to extensions
         if (selectedItem is ParagraphItem)
         {
@@ -77,6 +83,7 @@ public class BookReaderService : IBookReaderService
                 .SelectMany(x => x)
                 .ToList();
         }
+
         if (selectedItem is SectionItem)
         {
             var ggg = (SectionItem)selectedSection.Content.First();
@@ -91,7 +98,7 @@ public class BookReaderService : IBookReaderService
                 .ToList();
         }
 
-        _readerBookState.BookSectionName.Value = selectedSection.Title?.ToString()! ?? "Nameless" ;
+        _readerBookState.BookSectionName.Value = selectedSection.Title?.ToString()! ?? "Nameless";
         _readerBookState.BookSectionContent.Value = content;
     }
 

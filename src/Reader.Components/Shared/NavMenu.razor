@@ -3,8 +3,11 @@
 @using Reader.Services
 @using MudBlazor
 @using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.JSInterop
 @using Reader.Domain.Interfaces
 @implements IDisposable
+@inject IJSRuntime Js
+@inject ISettings Settings
 
 <MudNavMenu>
     <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
@@ -17,20 +20,13 @@
     {
         @foreach (var section in ReaderBookState.BookSections.Value!)
         {
-            <MudListItem Icon="@Icons.Material.Filled.Book" OnClick="() => SelectNewBookSection(section.Index)">@(section.Name)</MudListItem>
+            <MudListItem Icon="@Icons.Material.Filled.Book" OnClick="async () => SelectBookSection(section.Index)">@(section.Name)</MudListItem>
         }
     }
     
 </MudNavMenu>
 
 @code {
-
-    void SelectNewBookSection(int index)
-    {
-        BookReaderService.SelectBookSection(index);
-        StateHasChanged();
-    }
-    
     protected override void OnInitialized()
     {
         ReaderBookState.BookSections.OnChange += StateHasChanged;
@@ -39,5 +35,19 @@
     void IDisposable.Dispose()
     {
         ReaderBookState.BookSections.OnChange -= StateHasChanged;
+    }
+
+    async Task SelectBookSection(int sectionIndex)
+    {
+        BookReaderService.SelectBookSection(sectionIndex);
+        
+        var bookSettings = await Settings.GetSettings();
+        bookSettings.LastBookSectionIndex = sectionIndex;
+        bookSettings.LastBookSectionProgress = 0;
+        await Settings.UpdateSettings(bookSettings);
+        
+        await Js.InvokeVoidAsync("scrollContentTo", bookSettings.LastBookSectionProgress);
+        
+        StateHasChanged();
     }
 }
