@@ -6,32 +6,33 @@
 @inject IReaderBookState ReaderBookState;
 @inject IBookReaderService BookReaderService;
 @inject ITranslateService TranslateService;
+@inject IScrollInfoService ScrollInfoService
 
 <h1>@_sectionName</h1>
 
-@if (ReaderBookState.BookSectionContent.Value != null)
-{
-    @foreach (var ff in ReaderBookState.BookSectionContent.Value!)
+    @if (ReaderBookState.BookSectionContent.Value != null)
     {
-        if (string.IsNullOrWhiteSpace(ff.Sentence))
+        @foreach (var ff in ReaderBookState.BookSectionContent.Value!)
         {
-            continue;
-        }
+            if (string.IsNullOrWhiteSpace(ff.Sentence))
+            {
+                continue;
+            }
 
-        <MudText Typo="Typo.body1">@ff.Sentence</MudText>
+            <MudText Typo="Typo.body1">@ff.Sentence</MudText>
 
-        <MudIconButton Icon="@Icons.Material.Filled.Translate"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       Size="Size.Small"
-                       OnClick="async() => await TranslateBookSentence(ff)"/>
-                                               
-        if (!string.IsNullOrWhiteSpace(ff.TranslatedSentence))
-        {
-            <MudText Typo="Typo.body1" Color="Color.Error">@ff.TranslatedSentence</MudText>
+            <MudIconButton Icon="@Icons.Material.Filled.Translate"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Small"
+                           OnClick="async() => await TranslateBookSentence(ff)"/>
+                                                   
+            if (!string.IsNullOrWhiteSpace(ff.TranslatedSentence))
+            {
+                <MudText Typo="Typo.body1" Color="Color.Error">@ff.TranslatedSentence</MudText>
+            }
         }
     }
-}
 
 @code {
     string _sectionName= "";
@@ -50,12 +51,25 @@
                 StateHasChanged();
             });
         };
+
+        ScrollInfoService.OnScrollEnd += OnScrollEnd;
         
         StateHasChanged();
     }
 
+    private void OnScrollEnd(object sender, float percent)
+    {
+        //ReaderBookState.BookSectionName.Value = $"{percent}%";
+        StateHasChanged();
+    }
+    
     public async Task TranslateBookSentence(BookSentence bookSentence)
     {
         bookSentence.TranslatedSentence = await TranslateService.Translate(bookSentence.Sentence, Language.Ukrainian);
+    }
+    
+    public void Dispose()
+    {
+        ScrollInfoService.OnScrollEnd -= OnScrollEnd;
     }
 }

@@ -35,6 +35,20 @@
 <script>
        function addToLocalStorage(key, value) { localStorage[key] = value; }
        function readLocalStorage(key) { return localStorage[key]; }
+  
+       window.addEventListener("scrollend", (event) => {
+           if (window.scrollInfoService != null) {
+              const scrollPosition = document.body.getBoundingClientRect().top;
+              const maxPosition = document.body.clientHeight;
+              const scrollPercent = scrollPosition / maxPosition;
+              
+              window.scrollInfoService.invokeMethodAsync('OnScrollEnd', scrollPercent);
+           }
+       });
+       
+       window.RegisterScrollInfoService = (scrollInfoService) => {
+           window.scrollInfoService = scrollInfoService;
+       }
 </script>
 </body>
 </html>
