@@ -3,10 +3,12 @@
 @using MudBlazor
 @using Reader.Domain.Enums
 @using Reader.Domain.Models
+@using Microsoft.JSInterop
 @inject IReaderBookState ReaderBookState;
 @inject IBookReaderService BookReaderService;
 @inject ITranslateService TranslateService;
 @inject IScrollInfoService ScrollInfoService
+@inject IJSRuntime Js
 
 <h1>@_sectionName</h1>
 
@@ -52,24 +54,31 @@
             });
         };
 
-        ScrollInfoService.OnScrollEnd += OnScrollEnd;
+        ScrollInfoService.OnScrollEnd += OnScrollEnd!;
         
         StateHasChanged();
+        
+        // Load preferences
+        var lastBookProgressStr = await Js.InvokeAsync<string>("readLocalStorage", "bookProgress");
+        if (float.TryParse(lastBookProgressStr, out var lastBookProgress))
+        {
+            await Js.InvokeVoidAsync("scrollContentTo", lastBookProgress);
+        }
     }
 
     private void OnScrollEnd(object sender, float percent)
     {
-        //ReaderBookState.BookSectionName.Value = $"{percent}%";
+        Js.InvokeVoidAsync("addToLocalStorage", "bookProgress", percent).ConfigureAwait(false).GetAwaiter().GetResult();
         StateHasChanged();
     }
     
-    public async Task TranslateBookSentence(BookSentence bookSentence)
+    private async Task TranslateBookSentence(BookSentence bookSentence)
     {
         bookSentence.TranslatedSentence = await TranslateService.Translate(bookSentence.Sentence, Language.Ukrainian);
     }
     
     public void Dispose()
     {
-        ScrollInfoService.OnScrollEnd -= OnScrollEnd;
+        ScrollInfoService.OnScrollEnd -= OnScrollEnd!;
     }
 }
