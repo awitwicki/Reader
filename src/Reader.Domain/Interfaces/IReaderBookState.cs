@@ -7,6 +7,7 @@ public interface IReaderBookState
 {
     Subscribable<string> BookName { get; set; }
     Subscribable<string> BookSectionName { get; set; }
+    Subscribable<string> BookChapterName { get; set; }
     Subscribable<IList<BookSection>> BookSections { get; set; }
     Subscribable<List<BookSentence>> BookSectionContent { get; set; }
 }

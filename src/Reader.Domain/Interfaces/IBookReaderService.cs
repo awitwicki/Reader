@@ -6,5 +6,5 @@ public interface IBookReaderService
 {
     IEnumerable<string> GetBooks();
     Task<FB2File> LoadBookAsync(string filePath);
-    void SelectBookSection(int index);
+    void SelectBookSectionChapter(int sectionIndex, int chapterIndex);
 }

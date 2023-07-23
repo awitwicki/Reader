@@ -21,11 +21,9 @@ public class BookReaderService : IBookReaderService
         Book = new Subscribable<FB2File>();
     }
 
-    public IEnumerable<string> GetBooks()
-    {
-        return Directory.GetFiles("/");
-    }
-    
+    public IEnumerable<string> GetBooks() =>
+        Directory.GetFiles("/");
+
     public async Task<FB2File> LoadBookAsync(string filePath)
     {
         await using FileStream stream = new(filePath, FileMode.Open);
@@ -33,15 +31,21 @@ public class BookReaderService : IBookReaderService
         _readerBookState.BookName.Value = Book.Value.TitleInfo.BookTitle.Text;
         
         // Map Book sections
-        var bookSections = Array.Empty<BookSection>().ToList();
-        for (var i = 0; i < Book.Value.MainBody.Sections.Count; i++)
-        {
-            bookSections.Add(new BookSection
+        var bookSections = Book.Value.MainBody.Sections
+            .Select((x, sectionIndex) => new BookSection
             {
-                Index = i,
-                Name = Book.Value.MainBody.Sections[i].Title?.ToString()! ?? "Nameless" 
-            });
-        }
+                Index = sectionIndex,
+                Name = x.Title?.ToString()! ?? "Nameless",
+                Chapters = x.Content
+                    .Where(y => y is SectionItem)
+                    .Select((y, chapterIndex) =>
+                    new BookChapter
+                    {
+                        Index = chapterIndex,
+                        Name = $"{chapterIndex}.{((SectionItem)y).Title}"
+                    }).ToList()
+            })
+            .ToList();
       
         _readerBookState.BookSections.Value = bookSections;
         
@@ -51,54 +55,73 @@ public class BookReaderService : IBookReaderService
         await _settings.UpdateSettings(bookSettings);
         
         // Load section
-        SelectBookSection(bookSettings.LastBookSectionIndex);
+        SelectBookSectionChapter(bookSettings.LastBookSectionIndex, bookSettings.LastBookChapterIndex);
         
         return Book.Value;
     }
 
     // TODO fix exception on reload
-    public void SelectBookSection(int index)
+    public void SelectBookSectionChapter(int sectionIndex, int chapterIndex)
     {
-        var selectedSection = Book.Value!.MainBody.Sections.ElementAtOrDefault(index);
+        var selectedSection = Book.Value!.MainBody.Sections.ElementAtOrDefault(sectionIndex);
 
         if (selectedSection == null)
-            throw new IndexOutOfRangeException($"Boos kection with index [{index}] isnt exists");
+            throw new IndexOutOfRangeException($"Boos kection with index [{sectionIndex}] isnt exists");
+        
+        _readerBookState.BookSectionName.Value = selectedSection.Title?.ToString()! ?? "Nameless";
+        
+        var selectedChapter = selectedSection.Content.ElementAtOrDefault(chapterIndex);
+        
+        if (selectedChapter == null)
+            throw new IndexOutOfRangeException($"Boos chapter with index [{chapterIndex}] in section [{sectionIndex}: {selectedSection.Title}] isnt exists");
 
         var content = Array.Empty<BookSentence>().ToList();
 
-        // Map section sentences
-        var selectedItem = selectedSection.Content.First();
-
-        // TODO exctarct to extensions
-        if (selectedItem is ParagraphItem)
+        try
         {
-            var ggg = (ParagraphItem)selectedSection.Content.First();
-            content = ggg.ParagraphData.Select(x => x.ToString()).Select(x => x.Split(".")
-                    .Select(y => new BookSentence
+            if (selectedChapter is SectionItem)
+            {
+                _readerBookState.BookChapterName.Value =
+                    ((SectionItem)selectedChapter).Title?.ToString()! ?? "Nameless";
+
+                foreach (var item in ((SectionItem)selectedChapter).Content)
+                {
+                    // TODO extract to extensions
+                    if (item is ParagraphItem)
                     {
-                        Sentence = y.ToString()!
-                    })
-                    .ToList()
-                )
-                .SelectMany(x => x)
-                .ToList();
+                        var words = ((ParagraphItem)item).ToString().Split(".")
+                            .Select(y => new BookSentence
+                            {
+                                Sentence = y.ToString()!
+                            })
+                            .ToList();
+
+                        content.AddRange(words);
+                    }
+                }
+            }
+            else
+            {
+                // Parsing not done yet
+                content.Add(new BookSentence
+                {
+                    Sentence = "[Unsupported format]"
+                });
+            }
+        }
+        catch (Exception e)
+        {
+            content.Add(new BookSentence
+            {
+                Sentence = "[Unsupported format]"
+            });
+            
+            content.Add(new BookSentence
+            {
+                Sentence = e.ToString()
+            });
         }
 
-        if (selectedItem is SectionItem)
-        {
-            var ggg = (SectionItem)selectedSection.Content.First();
-            content = ggg.Content.Select(x => x.ToString()).Select(x => x.Split(".")
-                    .Select(y => new BookSentence
-                    {
-                        Sentence = y.ToString()!
-                    })
-                    .ToList()
-                )
-                .SelectMany(x => x)
-                .ToList();
-        }
-
-        _readerBookState.BookSectionName.Value = selectedSection.Title?.ToString()! ?? "Nameless";
         _readerBookState.BookSectionContent.Value = content;
     }
 

@@ -11,7 +11,9 @@
 @inject IJSRuntime Js
 @inject ISettings Settings
 
+@* TODO if its first chapter then show section name *@
 <h1>@_sectionName</h1>
+<h2>@_chapterName</h2>
 
     @if (ReaderBookState.BookSectionContent.Value != null)
     {
@@ -39,6 +41,8 @@
 
 @code {
     string _sectionName= "";
+    string _chapterName= "";
+    
     protected override async Task OnInitializedAsync()
     {
         // Load preferences
@@ -50,6 +54,7 @@
             await BookReaderService.LoadBookAsync(bookSettings.BookPath);
 
             _sectionName = ReaderBookState.BookSectionName.Value!;
+            _chapterName = ReaderBookState.BookChapterName.Value!;
         }
         // Else load default
         else
@@ -58,12 +63,22 @@
         }
 
         _sectionName = ReaderBookState.BookSectionName.Value!;
+        _chapterName = ReaderBookState.BookChapterName.Value!;
 
         ReaderBookState.BookSectionName.OnChange += () =>
         {
             InvokeAsync(() =>
             {
                 _sectionName = ReaderBookState.BookSectionName.Value!;
+                StateHasChanged();
+            });
+        };
+        
+        ReaderBookState.BookChapterName.OnChange += () =>
+        {
+            InvokeAsync(() =>
+            {
+                _chapterName = ReaderBookState.BookChapterName.Value!;
                 StateHasChanged();
             });
         };

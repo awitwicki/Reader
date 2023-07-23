@@ -20,7 +20,17 @@
     {
         @foreach (var section in ReaderBookState.BookSections.Value!)
         {
-            <MudListItem Icon="@Icons.Material.Filled.Book" OnClick="async () => SelectBookSection(section.Index)">@(section.Name)</MudListItem>
+            <MudListItem Icon="@Icons.Material.Filled.Book">
+                @(section.Name)
+            </MudListItem>
+            @foreach (var chapter in section.Chapters)
+            {
+                <MudListItem
+                             OnClick="async () => await SelectBookSectionChapter(section.Index, chapter.Index)">
+                    @(chapter.Name)
+                </MudListItem>
+            }
+            <MudDivider />
         }
     }
     
@@ -37,12 +47,13 @@
         ReaderBookState.BookSections.OnChange -= StateHasChanged;
     }
 
-    async Task SelectBookSection(int sectionIndex)
+    async Task SelectBookSectionChapter(int sectionIndex, int chapterIndex)
     {
-        BookReaderService.SelectBookSection(sectionIndex);
+        BookReaderService.SelectBookSectionChapter(sectionIndex, chapterIndex);
         
         var bookSettings = await Settings.GetSettings();
         bookSettings.LastBookSectionIndex = sectionIndex;
+        bookSettings.LastBookChapterIndex = chapterIndex;
         bookSettings.LastBookSectionProgress = 0;
         await Settings.UpdateSettings(bookSettings);
         
