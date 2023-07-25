@@ -24,18 +24,23 @@
                 continue;
             }
 
-            <MudText Typo="Typo.body1">@ff.Sentence</MudText>
-
-            <MudIconButton Icon="@Icons.Material.Filled.Translate"
-                           Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           Size="Size.Small"
-                           OnClick="async() => await TranslateBookSentence(ff)"/>
-                                                   
-            if (!string.IsNullOrWhiteSpace(ff.TranslatedSentence))
-            {
-                <MudText Typo="Typo.body1" Color="Color.Error">@ff.TranslatedSentence</MudText>
-            }
+            <div Class="d-flex justify-space-between flex-grow-1 gap-4">
+                <MudStack>
+                      <MudText Typo="Typo.body1">@ff.Sentence</MudText>
+                                                                    
+                      @if (!string.IsNullOrWhiteSpace(ff.TranslatedSentence))
+                      {
+                          <MudText Typo="Typo.body1" Color="Color.Error">@ff.TranslatedSentence</MudText>
+                      }
+                </MudStack>
+                <MudIconButton Icon="@Icons.Material.Filled.Translate"
+                               Class="py-2 my-2"
+                               Variant="Variant.Outlined"
+                               Color="Color.Info"
+                               Size="Size.Small"
+                               OnClick="async() => await TranslateBookSentence(ff)"/>
+            </div>
+            <MudDivider/>
         }
     }
 
