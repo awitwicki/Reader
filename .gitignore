@@ -8,3 +8,5 @@ obj
 *.user
 
 *.fb2
+
+.DS_STORE
