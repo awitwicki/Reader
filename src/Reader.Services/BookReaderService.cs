@@ -12,21 +12,24 @@ public class BookReaderService : IBookReaderService
 {
     private readonly IReaderBookState _readerBookState;
     private readonly ISettings _settings;
+    private readonly IFileManager _fileManager;
     public Subscribable<FB2File> Book { get; set; }
 
-    public BookReaderService(IReaderBookState readerBookState, ISettings settings)
+    public BookReaderService(IReaderBookState readerBookState, ISettings settings, IFileManager fileManager)
     {
         _readerBookState = readerBookState;
         _settings = settings;
+        _fileManager = fileManager;
         Book = new Subscribable<FB2File>();
     }
-
+  
     public IEnumerable<string> GetBooks() =>
         Directory.GetFiles("/");
 
     public async Task<FB2File> LoadBookAsync(string filePath)
     {
-        await using FileStream stream = new(filePath, FileMode.Open);
+        var stream = await _fileManager.OpenFile(filePath);
+        
         Book.Value = await _ReadFB2FileStreamAsync(stream);
         _readerBookState.BookName.Value = Book.Value.TitleInfo.BookTitle.Text;
         

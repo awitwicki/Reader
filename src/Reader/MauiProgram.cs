@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using MudBlazor.Services;
+using Reader.Common.Extensions;
 using Reader.Data;
 
 namespace Reader;
@@ -22,6 +23,7 @@ public static class MauiProgram
 #endif
 
         builder.Services.AddSingleton<WeatherForecastService>();
+        builder.Services.AddBookReaderMauiServices();
 
         return builder.Build();
     }

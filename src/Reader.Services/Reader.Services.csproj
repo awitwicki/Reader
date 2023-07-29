@@ -23,5 +23,14 @@
     <ItemGroup>
       <ProjectReference Include="..\Reader.Domain\Reader.Domain.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Microsoft.Maui.Essentials">
+        <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\packs\Microsoft.Maui.Essentials.Ref.android\7.0.52\ref\net7.0-android30.0\Microsoft.Maui.Essentials.dll</HintPath>
+      </Reference>
+      <Reference Include="Mono.Android">
+        <HintPath>..\..\..\..\..\..\..\Program Files\dotnet\packs\Microsoft.Android.Ref.33\33.0.4\ref\net7.0\Mono.Android.dll</HintPath>
+      </Reference>
+    </ItemGroup>
     
 </Project>

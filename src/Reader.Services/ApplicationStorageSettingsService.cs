@@ -5,14 +5,14 @@ using Reader.Domain.Models;
 
 namespace Reader.Services;
 
-public class SettingsService : ISettings
+public class ApplicationStorageSettingsService : ISettings
 {
     private readonly IJSRuntime _jsRuntime;
     private const string SettingsKey = "bookSettings";
 
     private static BookSettings? BookSettings { get; set; }
     
-    public SettingsService(IJSRuntime jsRuntime)
+    public ApplicationStorageSettingsService(IJSRuntime jsRuntime)
     {
         _jsRuntime = jsRuntime;
     }

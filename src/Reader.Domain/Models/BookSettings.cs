@@ -6,4 +6,6 @@ public class BookSettings
     public int LastBookSectionIndex { get; set; }
     public int LastBookChapterIndex { get; set; }
     public float LastBookSectionProgress { get; set; }
+    public decimal FontSize { get; set; }
+    public bool IsDarkMode { get; set; }
 }
