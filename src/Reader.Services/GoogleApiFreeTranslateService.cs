@@ -5,7 +5,7 @@ using Reader.Domain.Interfaces;
 
 namespace Reader.Services;
 
-public class TranslateService : ITranslateService
+public class GoogleApiFreeTranslateService : ITranslateService
 {
     public async Task<string> Translate(string input, Language language)
     {
