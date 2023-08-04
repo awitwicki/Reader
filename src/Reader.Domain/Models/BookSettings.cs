@@ -8,4 +8,15 @@ public class BookSettings
     public float LastBookSectionProgress { get; set; }
     public decimal FontSize { get; set; }
     public bool IsDarkMode { get; set; }
+    
+    public static BookSettings Default =>
+        new BookSettings
+        {
+            BookPath = null!,
+            LastBookSectionIndex = 0,
+            LastBookChapterIndex = 0,
+            LastBookSectionProgress = 0,
+            FontSize = 1.25m,
+            IsDarkMode = false
+        };
 }

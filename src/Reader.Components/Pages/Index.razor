@@ -40,7 +40,7 @@
                                Variant="Variant.Outlined"
                                Color="Color.Info"
                                Size="Size.Small"
-                               OnClick="async() => await TranslateBookSentence(ff)"/>
+                               OnClick="async () => await TranslateBookSentence(ff)"/>
             </div>
             <MudDivider/>
         }
@@ -49,6 +49,16 @@
 @code {
     string _sectionName= "";
     string _chapterName= "";
+    private bool _isAppBarActive;
+
+    private bool IsAppBarActive
+    {
+        get => _isAppBarActive;
+        set { 
+            _isAppBarActive = value;
+            StateHasChanged();
+        }
+    }
     
     protected override async Task OnInitializedAsync()
     {
@@ -72,6 +82,11 @@
         _sectionName = ReaderBookState.BookSectionName.Value!;
         _chapterName = ReaderBookState.BookChapterName.Value!;
 
+        ReaderBookState.IsAppBarActive.OnChange += () =>
+        {
+            InvokeAsync(StateHasChanged);
+        };
+        
         ReaderBookState.BookSectionName.OnChange += () =>
         {
             InvokeAsync(() =>
@@ -91,6 +106,7 @@
         };
 
         ScrollInfoService.OnScrollEnd += OnScrollEnd!;
+        ScrollInfoService.OnScroll += OnScroll!;
         
         StateHasChanged();
         
@@ -104,6 +120,18 @@
         Settings.UpdateSettings(bookSettings);
     }
 
+    private void OnScroll(object sender, bool isScrollDirectionUp)
+    {
+        if (!isScrollDirectionUp && ReaderBookState.IsAppBarActive.Value)
+        {
+            ReaderBookState.IsAppBarActive.Value = false;
+        }
+        else if (isScrollDirectionUp && !ReaderBookState.IsAppBarActive.Value)
+        {
+            ReaderBookState.IsAppBarActive.Value = true;
+        }
+    }
+    
     private async Task TranslateBookSentence(BookSentence bookSentence)
     {
         bookSentence.TranslatedSentence = await TranslateService.Translate(bookSentence.Sentence, Language.Ukrainian);
@@ -112,5 +140,6 @@
     public void Dispose()
     {
         ScrollInfoService.OnScrollEnd -= OnScrollEnd!;
+        ScrollInfoService.OnScroll -= OnScroll!;
     }
 }

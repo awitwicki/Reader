@@ -6,6 +6,7 @@ namespace Reader.Domain.Interfaces;
 public interface IReaderBookState
 {
     Subscribable<bool> IsDarkMode { get; set; }
+    Subscribable<bool> IsAppBarActive { get; set; }
     Subscribable<decimal> FontSize { get; set; }
     Subscribable<string> BookName { get; set; }
     Subscribable<string> BookSectionName { get; set; }

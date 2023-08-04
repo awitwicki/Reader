@@ -1,11 +1,11 @@
 ﻿@inherits LayoutComponentBase
-@inject IReaderBookState ReaderBookState;
 @using MudBlazor
 @using Reader.Domain.Interfaces
 @using Microsoft.JSInterop
 @implements IDisposable
 @inject IJSRuntime Js
 @inject ISettings Settings
+@inject IReaderBookState ReaderBookState;
 
 <MudThemeProvider Theme="_readerTheme" @bind-IsDarkMode="@_isDarkMode"/>
 <MudDialogProvider/>
@@ -16,11 +16,10 @@
 @if (_isThemeLoaded)
 {
     <MudLayout>
-        <MudAppBar Elevation="1">
+        <MudAppBar Elevation="1" Class="@("transparentable " + _appBarTransparencyClass)">
             <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(() => _drawerOpen = !_drawerOpen)"/>
             <MudText Typo="Typo.h6">@BookName</MudText>
             <MudSpacer/>
-            
             <MudIconButton Icon="@Icons.Material.Filled.TextIncrease" Color="Color.Inherit" OnClick="FontIncrease"/>
             <MudIconButton Icon="@Icons.Material.Filled.TextDecrease" Color="Color.Inherit" OnClick="FontDecrease"/>
             <MudIconButton Icon="@ThemeBtnIcon" Color="Color.Inherit" OnClick="ToggleTheme"/>
@@ -41,9 +40,10 @@
 @code {
     private MudThemeProvider _mudThemeProvider;
     private bool _isDarkMode;
-    private bool _isThemeLoaded = false;
+    private bool _isThemeLoaded;
 
     private string BookName => ReaderBookState.BookName.Value ?? "Reader" ;
+    private string _appBarTransparencyClass = "";
 
     bool _drawerOpen = true;
     string ThemeBtnIcon => _isDarkMode ? Icons.Material.Filled.Brightness4 : Icons.Material.Filled.Brightness5;
@@ -60,7 +60,7 @@
             {
                 FontSize = "1.25rem",
             }
-        },
+        }
     };
     
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -69,6 +69,7 @@
         {
             ReaderBookState.BookName.OnChange += StateHasChanged;
             ReaderBookState.FontSize.OnChange += OnFontChanged;
+            ReaderBookState.IsAppBarActive.OnChange += OnAppBarTransparencyChanged;
 
             var bookSettings = await Settings.GetSettings();
             ReaderBookState.FontSize.Value = bookSettings.FontSize;
@@ -83,6 +84,15 @@
     void OnFontChanged()
     {
         _readerTheme.Typography.Body1.FontSize = $"{ReaderBookState.FontSize.Value}rem";
+        StateHasChanged();
+    }
+    
+    void OnAppBarTransparencyChanged()
+    {
+        _appBarTransparencyClass = ReaderBookState.IsAppBarActive.Value ? "" : "transparent";
+        Console.WriteLine(ReaderBookState.IsAppBarActive.Value);
+        Console.WriteLine(_appBarTransparencyClass);
+        
         StateHasChanged();
     }
     
@@ -121,7 +131,7 @@
         bookSettings.FontSize = newFontSize;
         Settings.UpdateSettings(bookSettings);
     }
-    
+
     void IDisposable.Dispose()
     {
         ReaderBookState.BookName.OnChange -= StateHasChanged;

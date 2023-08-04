@@ -5,6 +5,7 @@ namespace Reader.Services;
 
 public class ScrollInfoService : IScrollInfoService
 {
+    public event EventHandler<bool>? OnScroll;
     public event EventHandler<float>? OnScrollEnd; 
     public ScrollInfoService(IJSRuntime jsRuntime)
     {
@@ -18,6 +19,12 @@ public class ScrollInfoService : IScrollInfoService
 
     public float YPercentValue { get; private set; }
 
+    [JSInvokable("OnScroll")]
+    public void JsOnScroll(bool isScrollDirectionUp)
+    {
+        OnScroll?.Invoke(this, isScrollDirectionUp);
+    }
+    
     [JSInvokable("OnScrollEnd")]
     public void JsOnScrollEnd(float yPercentValue)
     {

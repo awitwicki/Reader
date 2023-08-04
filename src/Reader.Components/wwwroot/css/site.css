@@ -1,0 +1,15 @@
+.transparent
+{
+    opacity: 0;
+    animation: fadein 0.5s;
+}
+
+@keyframes fadein {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}

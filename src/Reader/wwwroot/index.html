@@ -6,6 +6,7 @@
     <title>Reader</title>
     <base href="/" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+    <link href="_content/Reader.Components/css/site.css" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
     <link href="css/app.css" rel="stylesheet" />
     <link href="Reader.styles.css" rel="stylesheet" />
@@ -24,37 +25,8 @@
     </div>
 
     <script src="_framework/blazor.webview.js" autostart="false"></script>
+    <script src="_content/Reader.Components/site.js"></script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
-    <script>
-        function addToLocalStorage(key, value) { localStorage[key] = value; }
-        function readLocalStorage(key) { return localStorage[key]; }
-        function scrollContentTo(percentage) {
-            // Convert percentage to pixels value
-            const maxPosition = document.body.clientHeight;
-            const yValue = maxPosition * percentage;
-            console.log(percentage);
-            console.log(yValue);
-            window.scrollTo({
-                top: yValue,
-                left: 0,
-                behavior: "smooth",
-            });
-        }
-
-        window.addEventListener("scrollend", (event) => {
-            if (window.scrollInfoService != null) {
-                const scrollPosition = document.body.getBoundingClientRect().top;
-                const maxPosition = document.body.clientHeight;
-                const scrollPercent = scrollPosition / maxPosition;
-
-                window.scrollInfoService.invokeMethodAsync('OnScrollEnd', scrollPercent);
-            }
-        });
-
-        window.RegisterScrollInfoService = (scrollInfoService) => {
-            window.scrollInfoService = scrollInfoService;
-        }
-    </script>
 </body>
 
 </html>
