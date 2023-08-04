@@ -12,8 +12,8 @@
 @inject ISettings Settings
 
 @* TODO if its first chapter then show section name *@
-<h1>@_sectionName</h1>
-<h2>@_chapterName</h2>
+<MudText Typo="Typo.h2">@_sectionName</MudText>
+<MudText Typo="Typo.h3">@_chapterName</MudText>
 
     @if (ReaderBookState.BookSectionContent.Value != null)
     {

@@ -2,6 +2,7 @@
 @using MudBlazor
 @using Reader.Domain.Interfaces
 @using Microsoft.JSInterop
+@using System.Globalization
 @implements IDisposable
 @inject IJSRuntime Js
 @inject ISettings Settings
@@ -59,6 +60,7 @@
             Body1 = new Body1()
             {
                 FontSize = "1.25rem",
+                FontFamily = new []{"Times New Roman"}
             }
         }
     };
@@ -83,7 +85,15 @@
 
     void OnFontChanged()
     {
-        _readerTheme.Typography.Body1.FontSize = $"{ReaderBookState.FontSize.Value}rem";
+        var nfi = new NumberFormatInfo
+        {
+            NumberDecimalSeparator = ".",
+            NumberGroupSeparator = "."
+        };
+
+        var fontSizeStr = ReaderBookState.FontSize.Value.ToString(nfi) + "rem";
+        
+        _readerTheme.Typography.Body1.FontSize = fontSizeStr;
         StateHasChanged();
     }
     
