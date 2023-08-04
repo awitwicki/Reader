@@ -1,3 +1,4 @@
+using System.Net;
 using System.Text;
 using Newtonsoft.Json;
 using Reader.Domain.Enums;
@@ -75,7 +76,12 @@ public class AzureTranslateService : ITranslateService
 
             // Send the request and get response.
             var response = await client.SendAsync(request).ConfigureAwait(false);
-                
+
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                return "Unauthorized (Wrong azure cognitive services api key)";
+            }
+            
             // Read response as a string.
             var result = await response.Content.ReadAsStringAsync();
 
