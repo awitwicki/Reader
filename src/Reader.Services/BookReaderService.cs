@@ -95,7 +95,7 @@ public class BookReaderService : IBookReaderService
                         var words = ((ParagraphItem)item).ToString().Split(".")
                             .Select(y => new BookSentence
                             {
-                                Sentence = y.ToString()!
+                                Sentence = y.ToString()! + "."
                             })
                             .ToList();
 
