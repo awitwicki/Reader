@@ -35,8 +35,8 @@
                         }
                     </div>
                 </MudStack>
-                <MudIconButton Icon="@Icons.Material.Filled.Translate"
-                               Class="py-2 my-2"
+                <MudIconButton Icon="@(ff.IsTranslating ? Icons.Material.Filled.AccessTimeFilled : Icons.Material.Filled.Translate)"
+                               Class=@("py-2 my-2 " + (ff.IsTranslating ? "rotation" : ""))
                                Variant="Variant.Outlined"
                                Size="Size.Small"
                                OnClick="async () => await TranslateBookSentence(ff)"/>
@@ -133,7 +133,9 @@
     
     private async Task TranslateBookSentence(BookSentence bookSentence)
     {
+        bookSentence.IsTranslating = true;
         bookSentence.TranslatedSentence = await TranslateService.Translate(bookSentence.Sentence, Language.Ukrainian);
+        bookSentence.IsTranslating = false;
     }
     
     public void Dispose()
