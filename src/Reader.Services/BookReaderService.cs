@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.Xml;
 using FB2Library;
 using FB2Library.Elements;
@@ -22,17 +23,17 @@ public class BookReaderService : IBookReaderService
         _fileManager = fileManager;
         Book = new Subscribable<FB2File>();
     }
-  
+
     public IEnumerable<string> GetBooks() =>
         Directory.GetFiles("/");
 
     public async Task<FB2File> LoadBookAsync(string filePath)
     {
         var stream = await _fileManager.OpenFile(filePath);
-        
+
         Book.Value = await _ReadFB2FileStreamAsync(stream);
         _readerBookState.BookName.Value = Book.Value.TitleInfo.BookTitle.Text;
-        
+
         // Map Book sections
         var bookSections = Book.Value.MainBody.Sections
             .Select((x, sectionIndex) => new BookSection
@@ -42,25 +43,62 @@ public class BookReaderService : IBookReaderService
                 Chapters = x.Content
                     .Where(y => y is SectionItem)
                     .Select((y, chapterIndex) =>
-                    new BookChapter
-                    {
-                        Index = chapterIndex,
-                        Name = $"{chapterIndex}.{((SectionItem)y).Title}"
-                    }).ToList()
+                        new BookChapter
+                        {
+                            Index = chapterIndex,
+                            Name = $"{chapterIndex}.{((SectionItem)y).Title}"
+                        }).ToList()
             })
             .ToList();
-      
+
         _readerBookState.BookSections.Value = bookSections;
-        
+
         // Update settings
         var bookSettings = await _settings.GetSettings();
         bookSettings.BookPath = filePath;
         await _settings.UpdateSettings(bookSettings);
-        
+
         // Load section
         SelectBookSectionChapter(bookSettings.LastBookSectionIndex, bookSettings.LastBookChapterIndex);
-        
+
         return Book.Value;
+    }
+
+    private static SentenceStatus IsQuoteCompleted(string sentence)
+    {
+        const char quoteOpen = '“';
+        const char quoteClose = '”';
+        
+        var returnStatus = SentenceStatus.Normal;
+
+        foreach (var c in sentence)
+        {
+            switch (c)
+            {
+                case quoteOpen:
+                {
+                    returnStatus = SentenceStatus.QuoteNotClosed;
+                    break;
+                }
+                case quoteClose:
+                {
+                    if (returnStatus == SentenceStatus.QuoteNotClosed)
+                        returnStatus = SentenceStatus.Normal;
+                    if (returnStatus == SentenceStatus.Normal)
+                        returnStatus = SentenceStatus.QuoteNotOpened;
+                    break;
+                }
+            }
+        }
+
+        return returnStatus;
+    }
+
+    private enum SentenceStatus
+    {
+        Normal,
+        QuoteNotClosed,
+        QuoteNotOpened
     }
 
     // TODO fix exception on reload
@@ -92,10 +130,52 @@ public class BookReaderService : IBookReaderService
                     // TODO extract to extensions
                     if (item is ParagraphItem)
                     {
-                        var words = ((ParagraphItem)item).ToString().Split(".")
+                        var text = ((ParagraphItem)item).ToString()!;
+
+                        var sentences = Regex.Split(text, @"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s");
+                        var normalizedSentenses = new List<string>();
+                        var sentenceBuffer = "";
+
+                        foreach (var sentence in sentences)
+                        {
+                            var sentenceStatus = IsQuoteCompleted(sentence);
+
+                            if (string.IsNullOrWhiteSpace(sentenceBuffer))
+                            {
+                                if (sentenceStatus != SentenceStatus.QuoteNotClosed)
+                                {
+                                    normalizedSentenses.Add(sentence);
+                                }
+                                else
+                                {
+                                    sentenceBuffer = sentence;
+                                }
+                            }
+                            // Seek sentence with end of citation
+                            else
+                            {
+                                if (sentenceStatus == SentenceStatus.QuoteNotOpened)
+                                {
+                                    normalizedSentenses.Add(sentenceBuffer + " " + sentence);
+                                    sentenceBuffer = "";
+                                }
+                                else
+                                {
+                                    sentenceBuffer += " " + sentence;
+                                }
+                            }
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(sentenceBuffer))
+                        {
+                            normalizedSentenses.Add(sentenceBuffer);
+                        }
+                        
+                        var words = normalizedSentenses
+                            .Where(x => x.Length > 1)
                             .Select(y => new BookSentence
                             {
-                                Sentence = y.ToString()! + "."
+                                Sentence = y
                             })
                             .ToList();
 
