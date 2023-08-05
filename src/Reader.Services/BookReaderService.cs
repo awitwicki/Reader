@@ -133,7 +133,7 @@ public class BookReaderService : IBookReaderService
                         var text = ((ParagraphItem)item).ToString()!;
 
                         var sentences = Regex.Split(text, @"(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s");
-                        var normalizedSentenses = new List<string>();
+                        var normalizedSentences = new List<string>();
                         var sentenceBuffer = "";
 
                         foreach (var sentence in sentences)
@@ -144,7 +144,7 @@ public class BookReaderService : IBookReaderService
                             {
                                 if (sentenceStatus != SentenceStatus.QuoteNotClosed)
                                 {
-                                    normalizedSentenses.Add(sentence);
+                                    normalizedSentences.Add(sentence);
                                 }
                                 else
                                 {
@@ -156,7 +156,7 @@ public class BookReaderService : IBookReaderService
                             {
                                 if (sentenceStatus == SentenceStatus.QuoteNotOpened)
                                 {
-                                    normalizedSentenses.Add(sentenceBuffer + " " + sentence);
+                                    normalizedSentences.Add(sentenceBuffer + " " + sentence);
                                     sentenceBuffer = "";
                                 }
                                 else
@@ -168,10 +168,10 @@ public class BookReaderService : IBookReaderService
 
                         if (!string.IsNullOrWhiteSpace(sentenceBuffer))
                         {
-                            normalizedSentenses.Add(sentenceBuffer);
+                            normalizedSentences.Add(sentenceBuffer);
                         }
                         
-                        var words = normalizedSentenses
+                        var words = normalizedSentences
                             .Where(x => x.Length > 1)
                             .Select(y => new BookSentence
                             {
