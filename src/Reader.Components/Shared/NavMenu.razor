@@ -5,6 +5,7 @@
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.Extensions.Options
 @using Microsoft.JSInterop
+@using Reader.Common.Helpers
 @using Reader.Domain.Interfaces
 @using Reader.Domain.Models
 @implements IDisposable
@@ -30,7 +31,7 @@
                             @foreach (var chapter in section.Chapters)
                             {
                                 <MudListItem
-                                    Class="@((section.Index * 100 + chapter.Index == _selectedChapterIndex) ? "activated" : "")"
+                                    Class="@(SectionChapterIndexConverter.ConvertSectionChapterIndex(section.Index, chapter.Index) == _selectedChapterIndex ? "activated" : "")"
                                     OnClick="async () => await SelectBookSectionChapter(section.Index, chapter.Index)">
                                     @(chapter.Name)
                                 </MudListItem>
@@ -61,12 +62,11 @@
     
     protected override void OnAfterRender(bool firstRender)
     {
-        if (firstRender)
-        {
-            var bookSettings = Settings.GetSettings().GetAwaiter().GetResult();
-            _selectedChapterIndex = bookSettings?.LastBookSectionIndex * 100 + bookSettings?.LastBookChapterIndex ?? -1;
-            StateHasChanged();
-        }
+        if (!firstRender) return;
+        
+        var bookSettings = Settings.GetSettings().GetAwaiter().GetResult();
+        _selectedChapterIndex = SectionChapterIndexConverter.ConvertSectionChapterIndex(bookSettings?.LastBookSectionIndex, bookSettings?.LastBookChapterIndex);
+        StateHasChanged();
     }
     
     void IDisposable.Dispose()
@@ -76,7 +76,7 @@
 
     async Task SelectBookSectionChapter(int sectionIndex, int chapterIndex)
     {
-        _selectedChapterIndex = sectionIndex * 100 + chapterIndex;
+        _selectedChapterIndex = SectionChapterIndexConverter.ConvertSectionChapterIndex(sectionIndex, chapterIndex);
         BookReaderService.SelectBookSectionChapter(sectionIndex, chapterIndex);
         
         var bookSettings = await Settings.GetSettings();

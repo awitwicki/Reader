@@ -33,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Reader.Common\Reader.Common.csproj" />
     <ProjectReference Include="..\Reader.Services\Reader.Services.csproj" />
   </ItemGroup>
 
