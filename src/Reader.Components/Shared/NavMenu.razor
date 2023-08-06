@@ -3,8 +3,10 @@
 @using Reader.Services
 @using MudBlazor
 @using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.Extensions.Options
 @using Microsoft.JSInterop
 @using Reader.Domain.Interfaces
+@using Reader.Domain.Models
 @implements IDisposable
 @inject IJSRuntime Js
 @inject ISettings Settings
@@ -18,25 +20,39 @@
 
     @if (ReaderBookState.BookSections.Value != null)
     {
-        @foreach (var section in ReaderBookState.BookSections.Value!)
-        {
-            <MudListItem Icon="@Icons.Material.Filled.Book">
-                @(section.Name)
-            </MudListItem>
-            @foreach (var chapter in section.Chapters)
+        <MudList Clickable="true">
+            @foreach (var section in ReaderBookState.BookSections.Value!)
             {
-                <MudListItem
-                             OnClick="async () => await SelectBookSectionChapter(section.Index, chapter.Index)">
-                    @(chapter.Name)
-                </MudListItem>
+                @if (section.Chapters.Any())
+                {
+                    <MudListItem Text="@(section.Name)" Icon="@Icons.Material.Filled.Book" InitiallyExpanded="true">
+                        <NestedList>
+                            @foreach (var chapter in section.Chapters)
+                            {
+                                <MudListItem
+                                    Class="@((section.Index * 100 + chapter.Index == _selectedChapterIndex) ? "activated" : "")"
+                                    OnClick="async () => await SelectBookSectionChapter(section.Index, chapter.Index)">
+                                    @(chapter.Name)
+                                </MudListItem>
+                            }
+                        </NestedList>
+                    </MudListItem>
+                }
+                else
+                {
+                    <MudListItem Text="@(section.Name)" Icon="@Icons.Material.Filled.Book" Clickable="true">
+                    </MudListItem>
+                }
+                <MudDivider/>
             }
-            <MudDivider />
-        }
+        </MudList>
     }
     
 </MudNavMenu>
 
 @code {
+    private int _selectedChapterIndex = -1;
+    
     protected override void OnInitialized()
     {
         ReaderBookState.BookSections.OnChange += StateHasChanged;
@@ -49,6 +65,8 @@
 
     async Task SelectBookSectionChapter(int sectionIndex, int chapterIndex)
     {
+        _selectedChapterIndex = sectionIndex * 100 + chapterIndex;
+        Console.WriteLine(_selectedChapterIndex);
         BookReaderService.SelectBookSectionChapter(sectionIndex, chapterIndex);
         
         var bookSettings = await Settings.GetSettings();

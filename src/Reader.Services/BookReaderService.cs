@@ -46,7 +46,7 @@ public class BookReaderService : IBookReaderService
                         new BookChapter
                         {
                             Index = chapterIndex,
-                            Name = $"{chapterIndex}.{((SectionItem)y).Title}"
+                            Name = $"{chapterIndex}. {((SectionItem)y).Title}"
                         }).ToList()
             })
             .ToList();

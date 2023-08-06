@@ -57,10 +57,9 @@
         },
         Typography = new Typography()
         {
-            Body1 = new Body1()
+            Body2 = new Body2()
             {
                 FontSize = "1.25rem",
-                FontFamily = new []{"Times New Roman"}
             }
         }
     };
@@ -93,7 +92,7 @@
 
         var fontSizeStr = ReaderBookState.FontSize.Value.ToString(nfi) + "rem";
         
-        _readerTheme.Typography.Body1.FontSize = fontSizeStr;
+        _readerTheme.Typography.Body2.FontSize = fontSizeStr;
         StateHasChanged();
     }
     
