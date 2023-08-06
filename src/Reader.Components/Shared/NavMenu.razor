@@ -56,6 +56,17 @@
     protected override void OnInitialized()
     {
         ReaderBookState.BookSections.OnChange += StateHasChanged;
+        StateHasChanged();
+    }
+    
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var bookSettings = Settings.GetSettings().GetAwaiter().GetResult();
+            _selectedChapterIndex = bookSettings?.LastBookSectionIndex * 100 + bookSettings?.LastBookChapterIndex ?? -1;
+            StateHasChanged();
+        }
     }
     
     void IDisposable.Dispose()
@@ -66,7 +77,6 @@
     async Task SelectBookSectionChapter(int sectionIndex, int chapterIndex)
     {
         _selectedChapterIndex = sectionIndex * 100 + chapterIndex;
-        Console.WriteLine(_selectedChapterIndex);
         BookReaderService.SelectBookSectionChapter(sectionIndex, chapterIndex);
         
         var bookSettings = await Settings.GetSettings();
